@@ -14,6 +14,62 @@ type Configo struct {
 	conf map[string]string
 }
 
+type Result struct {
+	cur_result string
+	cur_err    os.Error
+	deflt      string
+}
+
+func (r Result) asBool() (bool, os.Error) {
+	i, err := strconv.Atob(r.cur_result)
+	if err != nil {
+		d, err := strconv.Atob(r.deflt)
+		if err != nil {
+			return false, err
+		}
+		return d, nil
+	}
+	return i, nil
+}
+func (r Result) asString() (string, os.Error) {
+	if r.cur_err != nil {
+		if r.deflt != "" {
+			return r.deflt, nil
+		}
+		return "", r.cur_err
+	}
+	return r.cur_result, r.cur_err
+}
+func (r Result) asInt() (int, os.Error) {
+	i, err := strconv.Atoi(r.cur_result)
+	if err != nil {
+		i, err := strconv.Atoi(r.deflt)
+		if err != nil {
+			return 0, err
+		}
+		return i, nil
+	}
+	return i, nil
+}
+
+
+func (c Configo) Get(k string) *Result {
+	cur := new(Result)
+	val, ok := c.conf[k]
+	if !ok {
+		cur.cur_err = os.NewError("No value for key")
+		return cur
+	}
+
+	cur.cur_result = val
+	return cur
+}
+
+func (r Result) Default(deflt string) Result {
+	r.deflt = deflt
+	return r
+}
+
 func NewConfigo(path string) *Configo {
 	c := new(Configo)
 	f, err := os.Open(path)
@@ -47,22 +103,4 @@ func (c Configo) Load() os.Error {
 		}
 	}
 	return nil
-}
-
-func (c Configo) getString(k string, deflt string) string {
-	return c.conf[k]
-}
-func (c Configo) getInt(k string, deflt int) int {
-	i, err := strconv.Atoi(c.conf[k])
-	if err != nil {
-		return deflt
-	}
-	return i
-}
-func (c Configo) getBool(k string, deflt bool) bool {
-	i, err := strconv.Atob(c.conf[k])
-	if err != nil {
-		return deflt
-	}
-	return i
 }
