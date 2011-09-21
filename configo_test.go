@@ -23,20 +23,20 @@ func assertNotNil(t *testing.T, o interface{}) {
 func TestInt_Simple(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, _ := f.Get("int_val").asInt()
+	o, _ := f.Get("int_val").AsInt()
 	assertEqual(t, o, 345)
 }
 func TestInt_NonExistantKey_NoDefault(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, err := f.Get("int_val_not_there").asInt()
+	o, err := f.Get("int_val_not_there").AsInt()
 	assertNotNil(t, err)
 	assertEqual(t, o, 0)
 }
 func TestInt_NonExistantKey_HasDefault(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, err := f.Get("int_val_not_there").Default("23").asInt()
+	o, err := f.Get("int_val_not_there").Default("23").AsInt()
 	assertNil(t, err)
 	assertEqual(t, o, 23)
 }
@@ -44,20 +44,20 @@ func TestInt_NonExistantKey_HasDefault(t *testing.T) {
 func TestBool_Simple(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, _ := f.Get("bool_val").asBool()
+	o, _ := f.Get("bool_val").AsBool()
 	assertEqual(t, o, true)
 }
 func TestBool_NonExistantKey_NoDefault(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, err := f.Get("bool_val_not_there").asBool()
+	o, err := f.Get("bool_val_not_there").AsBool()
 	assertNotNil(t, err)
 	assertEqual(t, o, false)
 }
 func TestBool_NonExistantKey_HasDefault(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, err := f.Get("bool_val_not_there").Default("True").asBool()
+	o, err := f.Get("bool_val_not_there").Default("True").AsBool()
 	assertNil(t, err)
 	assertEqual(t, o, true)
 }
@@ -65,20 +65,20 @@ func TestBool_NonExistantKey_HasDefault(t *testing.T) {
 func TestString_Simple(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, _ := f.Get("string_val").asString()
+	o, _ := f.Get("string_val").AsString()
 	assertEqual(t, o, "any string. only single line though.")
 }
 func TestString_NonExistantKey_NoDefault(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, err := f.Get("string_val_not_there").asString()
+	o, err := f.Get("string_val_not_there").AsString()
 	assertNotNil(t, err)
 	assertEqual(t, o, "")
 }
 func TestString_NonExistantKey_HasDefault(t *testing.T) {
 	f := NewConfigo("./test_data/test.conf")
 	f.Load()
-	o, err := f.Get("string_val_not_there").Default("hello").asString()
+	o, err := f.Get("string_val_not_there").Default("hello").AsString()
 	assertNil(t, err)
 	assertEqual(t, o, "hello")
 }

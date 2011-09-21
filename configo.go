@@ -14,13 +14,13 @@ type Configo struct {
 	conf map[string]string
 }
 
-type Result struct {
+type result struct {
 	cur_result string
 	cur_err    os.Error
 	deflt      string
 }
 
-func (r Result) asBool() (bool, os.Error) {
+func (r result) AsBool() (bool, os.Error) {
 	i, err := strconv.Atob(r.cur_result)
 	if err != nil {
 		d, err := strconv.Atob(r.deflt)
@@ -31,7 +31,7 @@ func (r Result) asBool() (bool, os.Error) {
 	}
 	return i, nil
 }
-func (r Result) asString() (string, os.Error) {
+func (r result) AsString() (string, os.Error) {
 	if r.cur_err != nil {
 		if r.deflt != "" {
 			return r.deflt, nil
@@ -40,7 +40,7 @@ func (r Result) asString() (string, os.Error) {
 	}
 	return r.cur_result, r.cur_err
 }
-func (r Result) asInt() (int, os.Error) {
+func (r result) AsInt() (int, os.Error) {
 	i, err := strconv.Atoi(r.cur_result)
 	if err != nil {
 		i, err := strconv.Atoi(r.deflt)
@@ -53,8 +53,8 @@ func (r Result) asInt() (int, os.Error) {
 }
 
 
-func (c Configo) Get(k string) *Result {
-	cur := new(Result)
+func (c Configo) Get(k string) *result {
+	cur := new(result)
 	val, ok := c.conf[k]
 	if !ok {
 		cur.cur_err = os.NewError("No value for key")
@@ -65,7 +65,7 @@ func (c Configo) Get(k string) *Result {
 	return cur
 }
 
-func (r Result) Default(deflt string) Result {
+func (r result) Default(deflt string) result {
 	r.deflt = deflt
 	return r
 }
