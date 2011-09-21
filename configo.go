@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 )
 
+const kSeparator = "="
 
 type Configo struct {
 	path string
@@ -39,8 +40,9 @@ func (c Configo) Load() os.Error {
 
 	for _, line := range strings.Split(string(contents), "\n") {
 		trim_line := strings.TrimSpace(line)
-		if !strings.HasPrefix(trim_line, "#") {
-			sps := strings.SplitN(trim_line, "=", 2)
+		if strings.Index(trim_line, kSeparator) > 0 && !strings.HasPrefix(trim_line, "#") {
+			// wish i could use the index to split the string.
+			sps := strings.SplitN(trim_line, kSeparator, 2)
 			c.conf[strings.TrimSpace(sps[0])] = strings.TrimSpace(sps[1])
 		}
 	}
