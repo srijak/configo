@@ -1,33 +1,63 @@
-Simple/Fluent config file reader:
+### Configo: the fluent config file reader for go
+
+### Installation:
+```
+goinstall github.com/srijak/configo
+```
 
 
-Config file: eg.conf =>
-<pre>
-# comments should be preceeded by #s and are ignored
-no value lines are ignored too
-int_val = 345
-bool_val = True
-string_val = any string. only single line though.
- 
-# empty lines above are ignored too.
-</pre>
+### Usage:
 
-Access code:
+
+#### Option A: Create a struct and load configs into it using one line
 
 ``` go
-import (
- "github.com/srijak/configo"
-)
+type EgConfigStruct struct {
+  // Properties to be populated using
+  // the config file should be exportable
+  Astring string
+  Somenum int
+  Abool bool
+}
 
-.
-.
+ec := EgConfigStruct{}
+NewConfigo("./test_data/hydrate.conf").Hydrate(&ec)
+// Now:
+// ec.Astring => abra
+// ec.Somenum => 23
+// ec.Abool => true
+```
 
+#### Option B: manually access items
+
+``` go
 f := configo.NewConfigo("eg.conf")
 f.Load()
 
-f.Get("int_val").AsInt() => 345
-f.Get("int_val").AsString() => "345"
-f.Get("bool_val").AsBool() => true
-f.Get("no_key").Default("OOPS").AsString() => "OOPS"
-
+f.Get("Somenum").AsInt() => 345
+f.Get("Somenum").AsString() => "345"
+f.Get("Abool").AsBool() => true
+// can assign defaults
+f.Get("NoKey").Default("OOPS").AsString() => "OOPS"
 ```
+
+#### Option C: mix and match
+
+``` go
+ec := EgConfigStruct{}
+f:= NewConfigo("./test_data/hydrate.conf").Hydrate(&ec)
+
+// f.Get("Somenum").AsInt() => 345
+// ec.Somenum => 345
+```
+
+#### Example config file 
+<pre>
+# comments should be preceeded by #s and are ignored
+no value lines are ignored too
+Somenum = 345
+Abool = True
+Astring = any string. only single line though.
+ 
+# empty lines above are ignored too.
+</pre>
