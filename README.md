@@ -15,13 +15,19 @@ string_val = any string. only single line though.
 Access code:
 
 ``` go
+import (
+ "github.com/srijak/configo"
+)
 
-f := NewConfigo("eg.conf")
+.
+.
+
+f := configo.NewConfigo("eg.conf")
 f.Load()
 
-f.Get("int_val").asInt() => 345
-f.Get("int_val").asString() => "345"
-f.Get("bool_val").asBool() => true
-f.Get("no_key").Default("OOPS").asString() => "OOPS"
+f.Get("int_val").AsInt() => 345
+f.Get("int_val").AsString() => "345"
+f.Get("bool_val").AsBool() => true
+f.Get("no_key").Default("OOPS").AsString() => "OOPS"
 
 ```
