@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"os"
 	"io/ioutil"
+	"reflect"
 )
 
 const kSeparator = "="
@@ -81,6 +82,28 @@ func NewConfigo(path string) *Configo {
 	c.path = path
 	c.conf = make(map[string]string, 100)
 
+	return c
+}
+
+func (c Configo) Hydrate(st interface{}) Configo {
+	valueOfSt := reflect.ValueOf(st)
+	c.Load()
+	for k, _ := range c.conf {
+		field := valueOfSt.Elem().FieldByName(k)
+
+		if field.IsValid() && field.CanSet() {
+			if field.Kind() == reflect.Int {
+				val, _ := c.Get(k).AsInt()
+				field.SetInt(int64(val))
+			} else if field.Kind() == reflect.Bool {
+				val, _ := c.Get(k).AsBool()
+				field.SetBool(val)
+			} else if field.Kind() == reflect.String {
+				val, _ := c.Get(k).AsString()
+				field.SetString(val)
+			}
+		}
+	}
 	return c
 }
 

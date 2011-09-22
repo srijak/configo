@@ -82,3 +82,20 @@ func TestString_NonExistantKey_HasDefault(t *testing.T) {
 	assertNil(t, err)
 	assertEqual(t, o, "hello")
 }
+
+type TestConfigStruct struct {
+	// Properties to be populated using 
+	// the config file should be exportable
+	Astring string
+	Somenum int
+	Abool   bool
+}
+
+func TestHydrate(t *testing.T) {
+	tc := TestConfigStruct{}
+	NewConfigo("./test_data/hydrate.conf").Hydrate(&tc)
+
+	assertEqual(t, tc.Astring, "abra")
+	assertEqual(t, tc.Somenum, 23)
+	assertEqual(t, tc.Abool, true)
+}
