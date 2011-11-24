@@ -11,7 +11,7 @@ import (
 const kSeparator = "="
 
 type Configo struct {
-	Path string
+	path string
 	conf map[string]string
 }
 
@@ -53,7 +53,7 @@ func (r result) AsInt() (int, os.Error) {
 	return i, nil
 }
 
-func (c Configo) Get(k string) *result {
+func (c *Configo) Get(k string) *result {
 	cur := new(result)
 	val, ok := c.conf[k]
 	if !ok {
@@ -78,13 +78,13 @@ func NewConfigo(p string) *Configo {
 		return c
 	}
 
-	c.Path = p
+	c.path = p
 	c.conf = make(map[string]string, 100)
 
 	return c
 }
 
-func (c Configo) Hydrate(st interface{}) Configo {
+func (c *Configo) Hydrate(st interface{}) Configo {
 	valueOfSt := reflect.ValueOf(st)
 	c.Load()
 	for k, _ := range c.conf {
@@ -103,11 +103,11 @@ func (c Configo) Hydrate(st interface{}) Configo {
 			}
 		}
 	}
-	return c
+	return *c
 }
 
-func (c Configo) Load() os.Error {
-	file, _ := os.Open(c.Path)
+func (c *Configo) Load() os.Error {
+	file, _ := os.Open(c.path)
 	defer file.Close()
 
 	contents, err := ioutil.ReadAll(file)
