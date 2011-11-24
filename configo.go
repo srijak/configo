@@ -11,8 +11,8 @@ import (
 const kSeparator = "="
 
 type Configo struct {
-	path string
-	conf map[string]string
+	Path string
+	Conf map[string]string
 }
 
 type result struct {
@@ -55,7 +55,7 @@ func (r result) AsInt() (int, os.Error) {
 
 func (c *Configo) Get(k string) *result {
 	cur := new(result)
-	val, ok := c.conf[k]
+	val, ok := c.Conf[k]
 	if !ok {
 		cur.cur_err = os.NewError("No value for key")
 		return cur
@@ -78,16 +78,16 @@ func NewConfigo(p string) *Configo {
 		return c
 	}
 
-	c.path = p
-	c.conf = make(map[string]string, 100)
+	c.Path = p
+	c.Conf = make(map[string]string, 100)
 
 	return c
 }
 
-func (c *Configo) Hydrate(st interface{}) Configo {
+func (c *Configo) Hydrate(st interface{}) *Configo {
 	valueOfSt := reflect.ValueOf(st)
 	c.Load()
-	for k, _ := range c.conf {
+	for k, _ := range c.Conf {
 		field := valueOfSt.Elem().FieldByName(k)
 
 		if field.IsValid() && field.CanSet() {
@@ -103,11 +103,11 @@ func (c *Configo) Hydrate(st interface{}) Configo {
 			}
 		}
 	}
-	return *c
+	return c
 }
 
 func (c *Configo) Load() os.Error {
-	file, _ := os.Open(c.path)
+	file, _ := os.Open(c.Path)
 	defer file.Close()
 
 	contents, err := ioutil.ReadAll(file)
@@ -121,7 +121,7 @@ func (c *Configo) Load() os.Error {
 		if strings.Index(trim_line, kSeparator) > 0 && !strings.HasPrefix(trim_line, "#") {
 			// wish i could use the index to split the string.
 			sps := strings.SplitN(trim_line, kSeparator, 2)
-			c.conf[strings.TrimSpace(sps[0])] = strings.TrimSpace(sps[1])
+			c.Conf[strings.TrimSpace(sps[0])] = strings.TrimSpace(sps[1])
 		}
 	}
 	return nil
