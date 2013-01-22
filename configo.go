@@ -4,9 +4,10 @@ import (
 	"strings"
 	"strconv"
 	"os"
+  "errors"
 	"io/ioutil"
 	"reflect"
-)
+  )
 
 const kSeparator = "="
 
@@ -17,14 +18,14 @@ type Configo struct {
 
 type result struct {
 	cur_result string
-	cur_err    os.Error
+	cur_err    error
 	deflt      string
 }
 
-func (r result) AsBool() (bool, os.Error) {
-	i, err := strconv.Atob(r.cur_result)
+func (r result) AsBool() (bool, error) {
+	i, err := strconv.ParseBool(r.cur_result)
 	if err != nil {
-		d, err := strconv.Atob(r.deflt)
+		d, err := strconv.ParseBool(r.deflt)
 		if err != nil {
 			return false, err
 		}
@@ -32,7 +33,7 @@ func (r result) AsBool() (bool, os.Error) {
 	}
 	return i, nil
 }
-func (r result) AsString() (string, os.Error) {
+func (r result) AsString() (string, error) {
 	if r.cur_err != nil {
 		if r.deflt != "" {
 			return r.deflt, nil
@@ -41,7 +42,7 @@ func (r result) AsString() (string, os.Error) {
 	}
 	return r.cur_result, r.cur_err
 }
-func (r result) AsInt() (int, os.Error) {
+func (r result) AsInt() (int, error) {
 	i, err := strconv.Atoi(r.cur_result)
 	if err != nil {
 		i, err := strconv.Atoi(r.deflt)
@@ -57,7 +58,7 @@ func (c *Configo) Get(k string) *result {
 	cur := new(result)
 	val, ok := c.Conf[k]
 	if !ok {
-		cur.cur_err = os.NewError("No value for key")
+		cur.cur_err = errors.New("No value for key")
 		return cur
 	}
 
@@ -106,7 +107,7 @@ func (c *Configo) Hydrate(st interface{}) *Configo {
 	return c
 }
 
-func (c *Configo) Load() os.Error {
+func (c *Configo) Load() error {
 	file, _ := os.Open(c.Path)
 	defer file.Close()
 
